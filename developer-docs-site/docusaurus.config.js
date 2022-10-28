@@ -6,6 +6,8 @@ const darkCodeTheme = require("prism-react-renderer/themes/dracula");
 
 const codeInjector = require("./src/remark/code-injector");
 
+const { ProvidePlugin } = require("webpack");
+
 // KaTeX plugin stuff
 const math = require("remark-math");
 const katex = require("rehype-katex");
@@ -194,7 +196,7 @@ const config = {
                       <a href="https://aptosfoundation.org/privacy" target="_blank">Privacy</a>
                       <a href="https://aptosfoundation.org/terms" target="_blank">Terms</a></div>
                   </div>
-                </div>  
+                </div>
                 `,
               },
             ],
@@ -335,6 +337,36 @@ const config = {
         ],
       },
     ],
+    () => ({
+      name: "custom-webpack-config",
+      configureWebpack: () => {
+        return {
+          module: {
+            rules: [
+              {
+                test: /\.m?js/,
+                resolve: {
+                  fullySpecified: false,
+                },
+              },
+            ],
+          },
+          plugins: [
+            new ProvidePlugin({
+              process: require.resolve("process/browser"),
+            }),
+          ],
+          resolve: {
+            fallback: {
+              buffer: require.resolve("buffer"),
+              stream: false,
+              path: false,
+              process: false,
+            },
+          },
+        };
+      },
+    }),
   ],
 };
 
